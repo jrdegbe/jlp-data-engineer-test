@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+
+[dev-packages]
+black = "22.3.0"
+pylint = "2.13.5"
+sqlfluff = "0.12.0"
+
+[packages]
+psycopg = "3.0.11"
+psycopg_binary = "3.0.11"
+retry = "0.9.2"
+requests = "*"
+tqdm = "*"
+pyarrow = "*"
+
+[requires]
+python_version = "3.10"
+
+[scripts]
+format = "black ."
+lintpy = "pylint hello.py"
+lintsql = "sqlfluff lint --dialect postgres  initdb.d/sample.sql"

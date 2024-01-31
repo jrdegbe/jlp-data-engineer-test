@@ -1,0 +1,59 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: derek
+      POSTGRES_DB: my_database
+    networks:
+      - my_network
+
+  data-ingestion:
+    build: .
+    command: python ingest_transform.py
+    depends_on:
+      - db
+    volumes:
+      - ./src:/usr/src/app
+    networks:
+      - my_network
+
+  query-data:
+    build: .
+    command: python /usr/src/app/query_data.py  # updated command
+    depends_on:
+      - db
+      - data-ingestion
+    volumes:
+      - ./src:/usr/src/app/
+    networks:
+      - my_network
+
+  visualisation:
+    build: .
+    command: python visualisation.py
+    depends_on:
+      - db
+      - query-data
+    networks:
+      - my_network
+
+  test:
+    build: .
+    command: pytest /usr/src/app/src/test_functions.py
+    depends_on:
+      - db
+      - data-ingestion
+      - query-data
+      - visualisation
+    volumes:
+      - ./src:/usr/src/app/src
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
+
